@@ -26,16 +26,12 @@ FileWriter::FileWriter(const std::string &filename): _filename(filename), _max_i
 bool FileWriter::add_record(const std::string &login, const std::string &name, const std::string &email) {
     try {
         Record added_record(_max_id + 1, login, name, email);
-        if(add_record(added_record)) {
-            ++_max_id;
-            return true;
-        }
+        return add_record(added_record);
     }
     catch (std::invalid_argument& e) {
         std::cerr << "Invalid record" << std::endl;
         return false;
     }
-    return false;
 }
 
 bool FileWriter::add_record(Record &rec) {
@@ -61,9 +57,7 @@ bool FileWriter::add_record(Record &rec) {
             }
         }
         file.close();
-        if (rec.get_id() <= _max_id){
-            rec.set_id(++_max_id);
-        }
+        rec.set_id(++_max_id);
         std::ofstream ofile(_filename, std::ios_base::app);
         ofile << rec.to_string();
         ofile.close();
@@ -150,6 +144,7 @@ void FileWriter::merge(const std::string &other_file, const std::string& result_
                     }
                 }
             }
+            finished |= file1.eof();
             std::ifstream temp_file1;
             std::ofstream temp_file2;
             try{
@@ -159,10 +154,13 @@ void FileWriter::merge(const std::string &other_file, const std::string& result_
             catch (std::fstream::failure& e){
                 std::cerr << "temp files error" << std::endl;
             }
+            int last_id = _max_id + 1;
             std::string temp_line;
             while (std::getline(temp_file1, temp_line)) {
                 try {
                     Record rec(temp_line);
+                    if (finished)
+                        rec.set_id(last_id++);
                     if (!logins.count(rec.get_login()) && !emails.count(rec.get_email())) {
                         temp_file2 << rec.to_string();
                     } else {
@@ -178,28 +176,11 @@ void FileWriter::merge(const std::string &other_file, const std::string& result_
             temp_file2.close();
             std::swap(temp1, temp2);
         }
-        result_fw.append_records_from_file(temp1);
+        copy_from_to(temp1, result_filename, std::ios::app);
         remove(temp1.c_str());
         remove(temp2.c_str());
     }
     catch (std::fstream::failure& e){
         std::cerr <<"files error" << std::endl;
-    }
-}
-
-void FileWriter::append_records_from_file(const std::string &src_name) {
-    std::ifstream pre_result(src_name);
-    std::string line;
-    while (std::getline(pre_result, line)){
-        if (!line.empty()){
-            try{
-                Record rec(line);
-                add_record(rec);
-            }
-            catch (std::invalid_argument& e){
-                std::cerr << e.what();
-                continue;
-            }
-        }
     }
 }
