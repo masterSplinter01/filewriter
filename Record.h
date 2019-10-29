@@ -4,7 +4,7 @@
 class Record{
 public:
     Record(const int id, const std::string& login, const std::string& name, const std::string& email);
-    explicit Record(std::string& line);
+    explicit Record(const std::string& line);
     ~Record() = default;
     int get_id() const;
     void set_id(int id);

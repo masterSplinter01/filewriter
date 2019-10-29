@@ -7,16 +7,20 @@ Record::Record(const int id, const std::string &login, const std::string &name, 
                                                                                                             _login(login), _name(name), _email(email)
 { /* EMPTY */}
 
-Record::Record(std::string &line) {
+Record::Record(const std::string &line) {
     std::vector<std::string> tokens;
     std::regex delim(";");
     std::sregex_token_iterator iter(line.begin(), line.end(), delim, -1);
     std::sregex_token_iterator end;
     while (iter != end){
-        tokens.push_back(*iter);
-        ++iter;
+        if (*iter != "") {
+            tokens.push_back(*iter);
+            ++iter;
+        } else {
+        throw std::invalid_argument("Not enough data: " + line);
+        }
     }
-    if (tokens.size() < 4){
+    if (tokens.size() != 4){
         throw std::invalid_argument("Invalid record: " + line);
     }
     _id = std::stoi(tokens[0]);
