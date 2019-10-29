@@ -13,6 +13,7 @@ typedef  std::string (Record::*get_field_fn_pointer) () const;
 
 class FileWriter {
 public:
+    FileWriter():_filename(""), _max_id(0) {}
     explicit FileWriter(const std::string& filename);
     ~FileWriter() = default;
     bool add_record(const std::string &login, const std::string &name, const std::string &email);
@@ -20,6 +21,8 @@ public:
     void print();
     void copy_file(const std::string& copy_name, std::ios::openmode mode = std::ios::out);
     void merge(const std::string& other_file, const std::string& result_filename);
+    std::string get_filename() const;
+    int get_max_id() const;
 
     template <record_unique_fields E>
     bool delete_record(const std::string& str){
@@ -72,7 +75,6 @@ public:
         return deleted;
     }
 private:
-    void append_records_from_file(const std::string& src_name);
     std::string _filename;
     int _max_id;
 };

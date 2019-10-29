@@ -184,3 +184,11 @@ void FileWriter::merge(const std::string &other_file, const std::string& result_
         std::cerr <<"files error" << std::endl;
     }
 }
+
+std::string FileWriter::get_filename() const {
+    return _filename;
+}
+
+int FileWriter::get_max_id() const {
+    return  _max_id;
+}
