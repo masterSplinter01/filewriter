@@ -21,9 +21,14 @@ public:
     void print();
     void copy_file(const std::string& copy_name, std::ios::openmode mode = std::ios::out);
     void merge(const std::string& other_file, const std::string& result_filename, const int block_size = 65536);
+
     std::string get_filename() const;
     int get_max_id() const;
 
+    /*удалять запись можно по логину или email
+     * удаление происходит следующим образом: идем по файлу, если запись не соответствует введеному логину или почте,
+     * то копируем запись в другой файл, удаляем старый файл, новый файл переименовываем в старый
+     * функция возвращает, удалили ли мы какую либо запись или нет*/
     template <record_unique_fields E>
     bool delete_record(const std::string& str){
         std::ifstream file;
@@ -36,8 +41,8 @@ public:
         catch (std::fstream::failure& e){
             std::cout << "files not open" << std::endl;
         }
-        std::string line;
-        bool deleted = false;
+
+        /*здесь выбираем, по какому полю будем смотреть*/
         get_field_fn_pointer get_field;
         switch(E){
             case record_unique_fields::LOGIN:{
@@ -52,6 +57,10 @@ public:
                 return false;
             }
         }
+
+        std::string line;
+        bool deleted = false;
+
         while (std::getline(file, line)) {
             if(!line.empty()) {
                 try{
@@ -76,7 +85,11 @@ public:
     }
 private:
     std::string _filename;
+
+    /* id записей при добавлении в журнал генерируются просто: инкрементируются, поэтому, чтобы избежать одинаковых id
+     * в журнале, храним max_id - это максимальный id записей в файле */
     int _max_id;
 };
 
+/*вспомогательная внутренняя функция*/
 inline static void copy_from_to(const std::string &from, const std::string &to, std::ios::openmode mode);
