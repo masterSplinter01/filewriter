@@ -20,7 +20,7 @@ public:
     bool add_record(Record& rec);
     void print();
     void copy_file(const std::string& copy_name, std::ios::openmode mode = std::ios::out);
-    void merge(const std::string& other_file, const std::string& result_filename);
+    void merge(const std::string& other_file, const std::string& result_filename, const int block_size = 65536);
     std::string get_filename() const;
     int get_max_id() const;
 

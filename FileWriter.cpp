@@ -106,9 +106,8 @@ void FileWriter::copy_file(const std::string &copy_name, std::ios::openmode mode
     copy_from_to(_filename, copy_name, mode);
 }
 
-void FileWriter::merge(const std::string &other_file, const std::string& result_filename) {
+void FileWriter::merge(const std::string &other_file, const std::string& result_filename, const int block_size) {
     try{
-        auto block_size = 65536;
 
         copy_file(result_filename);
         FileWriter result_fw(result_filename);
