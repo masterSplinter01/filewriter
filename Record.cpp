@@ -3,8 +3,11 @@
 #include <regex>
 #include "Record.h"
 
-Record::Record(const int id, const std::string &login, const std::string &name, const std::string &email):  _id(id),
-                                                                                                            _login(login), _name(name), _email(email)
+Record::Record(const int id, const std::string &login, const std::string &name, const std::string &email):
+_id(id),
+_login(login),
+_name(name),
+_email(email)
 { /* EMPTY */}
 
 Record::Record(const std::string &line) {
